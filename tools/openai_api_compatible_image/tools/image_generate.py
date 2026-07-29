@@ -22,17 +22,31 @@ class ImageGenerateTool(Tool):
 
         model = tool_parameters.get("model") or self.runtime.credentials.get("model_name", "gemini-3.1-flash-image")
         endpoint_type = self.runtime.credentials.get("endpoint_type", "chat_completions")
+        
         size_key = tool_parameters.get("size", "square")
+        image_resolution = tool_parameters.get("image_resolution", "1K")
+        output_mime_type = tool_parameters.get("output_mime_type", "image/png")
+        temperature = tool_parameters.get("temperature", 1.0)
+        top_p = tool_parameters.get("top_p", 0.95)
+        thinking_level = tool_parameters.get("thinking_level", "MINIMAL")
+        safety_settings_val = tool_parameters.get("safety_settings", "OFF")
+        quality = tool_parameters.get("quality", "standard")
+        style = tool_parameters.get("style", "vivid")
+        seed_id = tool_parameters.get("seed_id")
 
         size_mapping_dalle = {
             "square": "1024x1024",
             "vertical": "1024x1792",
             "horizontal": "1792x1024",
+            "4:3": "1024x768",
+            "3:4": "768x1024",
         }
         aspect_ratio_mapping = {
             "square": "1:1",
             "vertical": "9:16",
             "horizontal": "16:9",
+            "4:3": "4:3",
+            "3:4": "3:4",
         }
 
         headers = {
@@ -45,16 +59,49 @@ class ImageGenerateTool(Tool):
 
         if endpoint_type == "chat_completions":
             url = base_url + "chat/completions"
+            
+            image_config = {}
+            if size_key in aspect_ratio_mapping:
+                image_config["aspect_ratio"] = aspect_ratio_mapping[size_key]
+            if image_resolution:
+                image_config["image_size"] = image_resolution
+            if output_mime_type:
+                image_config["output_mime_type"] = output_mime_type
+
+            thinking_config = {}
+            if thinking_level and thinking_level != "OFF":
+                thinking_config["thinking_level"] = thinking_level
+
+            safety_settings_list = []
+            if safety_settings_val:
+                for cat in [
+                    "HARM_CATEGORY_HATE_SPEECH",
+                    "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "HARM_CATEGORY_HARASSMENT",
+                ]:
+                    safety_settings_list.append({
+                        "category": cat,
+                        "threshold": safety_settings_val,
+                    })
+
             payload = {
                 "model": model,
                 "messages": [{"role": "user", "content": prompt}],
                 "modalities": ["text", "image"],
                 "response_modalities": ["TEXT", "IMAGE"],
                 "stream": False,
-                "image_config": {
-                    "aspect_ratio": aspect_ratio_mapping.get(size_key, "1:1")
-                }
+                "temperature": float(temperature),
+                "top_p": float(top_p),
             }
+
+            if image_config:
+                payload["image_config"] = image_config
+            if thinking_config:
+                payload["thinking_config"] = thinking_config
+            if safety_settings_list:
+                payload["safety_settings"] = safety_settings_list
+
             try:
                 res = requests.post(url, headers=headers, json=payload, timeout=180)
                 if res.status_code != 200:
@@ -95,8 +142,13 @@ class ImageGenerateTool(Tool):
                 "model": model,
                 "prompt": prompt,
                 "size": size_mapping_dalle.get(size_key, "1024x1024"),
+                "quality": quality,
+                "style": style,
                 "response_format": "b64_json",
             }
+            if seed_id:
+                payload["extra_body"] = {"seed": seed_id}
+
             try:
                 res = requests.post(url, headers=headers, json=payload, timeout=180)
                 if res.status_code != 200:
@@ -122,7 +174,7 @@ class ImageGenerateTool(Tool):
                 try:
                     img_res = requests.get(img_val, timeout=30)
                     blob_bytes = img_res.content
-                    mime_type = img_res.headers.get("Content-Type", "image/png")
+                    mime_type = img_res.headers.get("Content-Type", output_mime_type or "image/png")
                 except Exception as e:
                     yield self.create_text_message(f"Failed to fetch image URL: {str(e)}")
                     continue
@@ -132,7 +184,7 @@ class ImageGenerateTool(Tool):
                     b64_str = b64_str.split(",", 1)[1]
                 try:
                     blob_bytes = base64.b64decode(b64_str)
-                    mime_type = "image/png"
+                    mime_type = output_mime_type or "image/png"
                 except Exception as e:
                     yield self.create_text_message(f"Failed to decode base64 image: {str(e)}")
                     continue
