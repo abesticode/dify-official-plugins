@@ -170,8 +170,8 @@ parameters:
       zh_Hans: High (高)
     value: HIGH
   - label:
-      en_US: Off
-      zh_Hans: Off (关闭)
+      en_US: "Off"
+      zh_Hans: "Off (关闭)"
     value: "OFF"
   required: false
   type: select

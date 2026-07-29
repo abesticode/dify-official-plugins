@@ -15,7 +15,7 @@ meta:
     entrypoint: main
     language: python
     version: '3.12'
-  version: 0.0.3
+  version: 0.0.4
 name: openai_api_compatible_image
 plugins:
   tools:
