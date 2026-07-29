@@ -1,0 +1,74 @@
+credentials_for_provider:
+  endpoint_url:
+    help:
+      en_US: Please input your OpenAI-compatible API base URL (e.g. https://api.openai.com/v1 or LiteLLM proxy URL)
+      zh_Hans: 请输入兼容 OpenAI API 的 Endpoint 域名（例如 https://api.openai.com/v1 或 LiteLLM 代理 URL）
+    label:
+      en_US: API Endpoint URL
+      zh_Hans: API Endpoint URL
+    placeholder:
+      en_US: https://api.openai.com/v1
+      zh_Hans: https://api.openai.com/v1
+    required: true
+    type: text-input
+  api_key:
+    help:
+      en_US: Please input your API key
+      zh_Hans: 请输入 API Key
+    label:
+      en_US: API Key
+      zh_Hans: API Key
+    placeholder:
+      en_US: API Key
+      zh_Hans: API Key
+    required: false
+    type: secret-input
+  model_name:
+    help:
+      en_US: Default model name to use for image generation (e.g. gemini-3.1-flash-image, dall-e-3)
+      zh_Hans: 图像生成的默认模型名称（例如 gemini-3.1-flash-image, dall-e-3）
+    label:
+      en_US: Model Name
+      zh_Hans: 模型名称
+    placeholder:
+      en_US: gemini-3.1-flash-image
+      zh_Hans: gemini-3.1-flash-image
+    required: true
+    type: text-input
+  endpoint_type:
+    help:
+      en_US: Endpoint style to call. Use Chat Completions for multimodal models (e.g. Gemini image models), or Images Generations for standard DALL-E endpoints.
+      zh_Hans: 调用 Endpoint 样式。多模态模型使用 Chat Completions，标准 DALL-E 端点使用 Images Generations。
+    label:
+      en_US: Endpoint Style
+      zh_Hans: Endpoint 样式
+    type: select
+    required: false
+    default: chat_completions
+    options:
+      - value: chat_completions
+        label:
+          en_US: Chat Completions (/v1/chat/completions - Gemini / Multimodal)
+          zh_Hans: Chat Completions (/v1/chat/completions - Gemini / 多模态)
+      - value: images_generations
+        label:
+          en_US: Images Generations (/v1/images/generations - DALL-E)
+          zh_Hans: Images Generations (/v1/images/generations - DALL-E)
+extra:
+  python:
+    source: provider/openai_api_compatible_image.py
+identity:
+  author: langgenius
+  description:
+    en_US: OpenAI API Compatible Image Generation Tool
+    zh_Hans: OpenAI API 兼容图像生成工具
+  icon: icon.svg
+  label:
+    en_US: OpenAI Compatible Image Tool
+    zh_Hans: OpenAI 兼容图像生成工具
+  name: openai_api_compatible_image
+  tags:
+  - image
+  - productivity
+tools:
+- tools/image_generate.yaml

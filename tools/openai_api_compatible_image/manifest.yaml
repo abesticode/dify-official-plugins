@@ -1,0 +1,32 @@
+author: langgenius
+created_at: '2024-09-20T08:03:44.658609186Z'
+description:
+  en_US: OpenAI API Compatible Image Generation Tool (Outputs File/Blob)
+  zh_Hans: OpenAI API 兼容图像生成工具 (输出 File/Blob 文件)
+icon: icon.svg
+label:
+  en_US: OpenAI Compatible Image Tool
+  zh_Hans: OpenAI 兼容图像生成工具
+meta:
+  arch:
+  - amd64
+  - arm64
+  runner:
+    entrypoint: main
+    language: python
+    version: '3.12'
+  version: 0.0.2
+name: openai_api_compatible_image
+plugins:
+  tools:
+  - provider/openai_api_compatible_image.yaml
+resource:
+  memory: 1048576
+  permission:
+    tool:
+      enabled: true
+tags:
+- image
+- productivity
+type: plugin
+version: 0.0.1

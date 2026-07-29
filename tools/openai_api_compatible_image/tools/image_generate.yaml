@@ -1,0 +1,63 @@
+description:
+  human:
+    en_US: Generate image from text prompt using OpenAI-compatible API (Outputs File/Blob)
+    zh_Hans: 使用 OpenAI 兼容 API 根据文本提示词生成图像 (输出 File/Blob 文件)
+  llm: Generate images from text prompt and return image file
+extra:
+  python:
+    source: tools/image_generate.py
+identity:
+  author: langgenius
+  description:
+    en_US: Generate images from text prompt using OpenAI-compatible API and output image file
+    zh_Hans: 使用 OpenAI 兼容 API 根据文本提示词生成图像并输出图像文件
+  label:
+    en_US: Image Generator (File Output)
+    zh_Hans: 图像生成器 (文件输出)
+  name: image_generate
+parameters:
+- form: llm
+  human_description:
+    en_US: Detailed prompt describing the image to generate
+    zh_Hans: 描述要生成的图像的提示词
+  label:
+    en_US: Prompt
+    zh_Hans: 提示词
+  llm_description: The text prompt to generate an image for
+  name: prompt
+  required: true
+  type: string
+- form: form
+  human_description:
+    en_US: Model name override (optional, defaults to provider config)
+    zh_Hans: 覆盖模型名称（可选，默认使用 Provider 配置）
+  label:
+    en_US: Model Name
+    zh_Hans: 模型名称
+  name: model
+  required: false
+  type: string
+- default: square
+  form: form
+  human_description:
+    en_US: Aspect ratio / size for generated image
+    zh_Hans: 选择图像尺寸/宽高比
+  label:
+    en_US: Size / Aspect Ratio
+    zh_Hans: 尺寸/宽高比
+  name: size
+  options:
+  - label:
+      en_US: Square (1:1 / 1024x1024)
+      zh_Hans: 正方形 (1:1 / 1024x1024)
+    value: square
+  - label:
+      en_US: Vertical (9:16 / 1024x1792)
+      zh_Hans: 竖屏 (9:16 / 1024x1792)
+    value: vertical
+  - label:
+      en_US: Horizontal (16:9 / 1792x1024)
+      zh_Hans: 横屏 (16:9 / 1792x1024)
+    value: horizontal
+  required: false
+  type: select
